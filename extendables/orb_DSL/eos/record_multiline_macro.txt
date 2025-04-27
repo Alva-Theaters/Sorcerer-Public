@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2025 Alva Theaters
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
+key live                                         # Going live
+key macro, macro                                 # Entering macro mode
+cmd "Delete Macro {macro_number} Enter Enter"    # Deleting macro
+cmd "{macro_number} Enter"                       # Recreating macro
+key_up macro                                     # Resetting macro key
+softkey 6                                        # Edit softkey
+raw tokens                                       # Typing macro lines
+softkey_down 6                                   # Typing done
+key live                                         # Going live

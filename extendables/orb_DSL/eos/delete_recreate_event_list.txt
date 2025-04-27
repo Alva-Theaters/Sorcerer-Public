@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2025 Alva Theaters
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
+cmd "Delete Event {event_list_number} / Enter Enter"                  # Deleting List
+cmd "Event {event_list_number} / 1 Thru {end_frame} Enter"     # Recreating
+cmd "Event {event_list_number} / Frame_Rate {fps} Enter"              # Setting FPS
+key live                                                              # Going live

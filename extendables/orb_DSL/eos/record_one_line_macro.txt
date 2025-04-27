@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 Alva Theaters
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
+key live, learn, macro           # Initiating macro
+key {macro_number}               # Typing macro number
+key enter, enter                 # Typing Enter
+cmd "{macro_text}"               # Learning the macro
+key enter                        # Typing Enter
+key learn                        # Stopping learn mode
+key_up macro                     # Resetting macro key

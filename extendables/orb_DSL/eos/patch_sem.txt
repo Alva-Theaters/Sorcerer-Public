@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2025 Alva Theaters
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+
+key live, blind
+cmd "Patch Enter"
+cmd "Chan {sem_chan} Position {pos_x} / {pos_y} / {pos_z} Enter"
+cmd "Chan {sem_chan} Orientation {or_x} / {or_y} / {or_z} Enter"
+cmd "Chan {sem_chan} Type ETC_Fixtures Scenic_Element_Movable Enter"
+key live
+key Focus_Palette, Focus_Palette
+cmd "Focus_Palette {focus_palette} Track_SEM {sem_chan} Enter Enter"
+key live
+cmd "Chan {fixture} at Focus_Palette {focus_palette} Enter"
+cmd "Chan {fixture} Full Time 1 Enter"
