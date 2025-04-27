@@ -71,7 +71,7 @@ SPY_REGISTRATION_DEPSGRAPH = {
 }
 
 
-def register():
+def do_not_register_because_this_is_a_public_window_only():
     from .utils.register_addon import add_spy_api_to_bpy_api, append_on_register_function
     add_spy_api_to_bpy_api()
     RegisterAndUnregister().register(BPY_REGISTRATION_DEPSGRAPH, PACKAGE)
@@ -79,6 +79,6 @@ def register():
     append_on_register_function()
 
 
-def unregister():
+def do_not_unregister_because_this_is_a_public_window_only():
     RegisterAndUnregister().unregister(SPY_REGISTRATION_DEPSGRAPH, PACKAGE)
     RegisterAndUnregister().unregister(BPY_REGISTRATION_DEPSGRAPH, PACKAGE)
