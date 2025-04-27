@@ -1,5 +1,5 @@
 # Public Window Only
-Public-facing window into Sorcerer's architecture
+Public-facing window into Sorcerer's architecture. Gain access to the full repository at sorcerer.alvatheaters.com.
 
 <!--
 Following Blender's lead on this, keeping this short and concise. Seems like a good idea
