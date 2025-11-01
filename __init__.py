@@ -15,70 +15,97 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 '''
-=====================================================================
-                      DESIGNED BY ALVA THEATERS
-                       FOR THE SOLE PURPOSE OF
-                         MAKING PEOPLE HAPPY
-=====================================================================
+==================================================================================
+                           DESIGNED BY ALVA THEATERS
+                            FOR THE SOLE PURPOSE OF
+                              MAKING PEOPLE HAPPY
+==================================================================================
 '''
+
+BECOME_A_STAGE_SORCERER = '''Hey there. You know what Blender is, right? It's this 
+3D animation software that's pretty similar to the stuff they use to make animated 
+movies like Frozen and Toy Story. And you know how at those big concerts how they 
+have these armies of robot lights that move a lot? And you you know what Dolby Atmos 
+is, right? It basically lets you make it sound like a helicopter is flying over your 
+head in a theater. And you know how at those really big stadium concerts they 
+sometimes have robot cameras that automatically point themselves at performers? And 
+you know how in Blender, that 3D animation software, you control 3D characters with 
+animation keyframes, and graph editors, and dopesheets, and NLA editors, to give you 
+super detailed control?
+
+Well, Alva Sorcerer connects Blender to the stage. 
+
+ALVA stands for Animated Lighting, Video & Audio. Not automation, not show control, 
+animation. Keyframes galore!
+
+With Sorcerer, you can animate a stage with the same precision they get when 
+animating Wall-E and Rapunzel and Toothless. The stage is now your character. 
+Make it dance! Make it cry! Make it jump for joy!'''
 
 bl_info = {
     "name": "Alva Sorcerer",
     "author": "Alva Theaters",
     "location": "ShaderEditor/View3D/Sequencer/TextEditor/Properties/GraphEditor",
-    "version": (2, 1, 0),
-    "blender": (4, 1, 0),
+    "version": (2, 2, 2),
+    "blender": (4, 4, 1),
     "description": "3D animation in real life, for theatre, with Blender.",
     "wiki_url": "https://alva-sorcerer.readthedocs.io/en/latest/index.html#",
     "tracker_url": "https://sorcerer.alvatheaters.com/support",
-    "category": "EMARs",
+    "category": "Stage Animation",
 }
 
-as_info = { # Used in Sorcerer's splash
+as_info = {
     "alpha": False,
     "beta": True,
     "rating": "Experimental",
     "restrictions_url": "https://github.com/Alva-Theaters/Sorcerer/discussions/55"
 }
 
-from .utils.register_addon import RegisterAndUnregister
+import bpy
 
-PACKAGE = __package__ # Because importing the following relative dicts is outsourced.
-
-BPY_REGISTRATION_DEPSGRAPH = {
-    'ui_lists': 'as_ui.ui_lists',  # 1
-    'property_groups': 'makesrna.property_groups',  # 2
-    'lighting': 'nodes.lighting',  # 3
-    'audio': 'nodes.audio',  # 4
-    'register_operators': 'operators.register_operators', # 5
-    'rna_text': 'makesrna.rna_text',  # 6
-    'rna_preferences': 'makesrna.rna_preferences',  # 7
-    'rna_sequencer': 'makesrna.rna_sequencer',  # 8
-    'rna_scene': 'makesrna.rna_scene',  # 9
-    'rna_common': 'makesrna.rna_common',  # 10
-    'register_ui': 'as_ui.register_ui',  # 11
-    'menus': 'as_ui.menus',  # 12
-    'event_handlers': 'events.event_handlers',  # 13
-    'keymap': 'operators.keymap',  # 14
-}
-
-SPY_REGISTRATION_DEPSGRAPH = {
-    'fixture_parameters': 'extendables.fixture_parameters',  # 1
-    'languages': 'extendables.languages',  # 2
-    'lighting_consoles': 'extendables.lighting_consoles',  # 3
-    'lighting_controllers': 'extendables.lighting_controllers',  # 4
-    'sequencer_strips': 'extendables.sequencer_strips', # 5
-}
+from .source.addon_register import (
+    assert_directory_name,
+    assert_no_duplicates,
+    assert_blender_version,
+    append_spy_to_sys_modules,
+)
 
 
-def do_not_register_because_this_is_a_public_window_only():
-    from .utils.register_addon import add_spy_api_to_bpy_api, append_on_register_function
-    add_spy_api_to_bpy_api()
-    RegisterAndUnregister().register(BPY_REGISTRATION_DEPSGRAPH, PACKAGE)
-    RegisterAndUnregister().register(SPY_REGISTRATION_DEPSGRAPH, PACKAGE)
-    append_on_register_function()
+def register():
+    from .extendables_bpy import register_bpy_data
+    from .extendables_spy import register_spy_data  # Sorcerer's own version of bpy, totally separate from bpy.
+    from .source.maintenance.blendfinals import register_blendfinals_data  # Hook into integration testing add-on.
+
+    assert_directory_name()
+    assert_no_duplicates()
+    assert_blender_version()
+    append_spy_to_sys_modules()
+
+    from .source.draw.icons.load_icons import register_icons
+    register_icons()
+    
+    register_bpy_data()
+    register_spy_data()
+    register_blendfinals_data()
+    bpy.app.timers.register(on_register, first_interval=.01)
 
 
-def do_not_unregister_because_this_is_a_public_window_only():
-    RegisterAndUnregister().unregister(SPY_REGISTRATION_DEPSGRAPH, PACKAGE)
-    RegisterAndUnregister().unregister(BPY_REGISTRATION_DEPSGRAPH, PACKAGE)
+def on_register():
+    from .source.maintenance.unit_tests import test_sorcerer  # Unit testing runs on add-on register.
+    from .source.events.jobs.on_addon_register import IN_OnRegister_NOREV
+    from .source.spy.context import tag_update
+
+    tag_update(bpy.context.scene)
+    test_sorcerer()
+    IN_OnRegister_NOREV(None, None).execute() # Requires this bpy.context.
+
+
+def unregister():
+    from .source.maintenance.blendfinals import unregister_blendfinals_data
+    from .extendables_bpy import unregister_bpy_data
+    from .extendables_spy import unregister_spy_data
+    from .source.draw.icons.load_icons import unregister_icons
+    unregister_blendfinals_data()
+    unregister_spy_data()
+    unregister_bpy_data()
+    unregister_icons()
